@@ -1,8 +1,11 @@
-from typing import List, Optional
-from pydantic import BaseModel, Field
+import os
+from typing import List
+from dotenv import load_dotenv
 from openai import OpenAI
-import chromadb
-from chromadb.utils import embedding_functions
+from pydantic import BaseModel, Field
+from src.retriever import AgronomyRetriever
+
+load_dotenv()
 
 # --- Schema Definitions ---
 
@@ -17,35 +20,29 @@ class AgronomicAnswer(BaseModel):
     confidence_score: float = Field(description="Confidence rating between 0.0 and 1.0 based on retrieved context quality.")
     is_sufficient_context: bool = Field(description="Set to false if context lacks information to safely answer.")
 
-# --- Engine Logic ---
+# --- RAG Engine ---
 
 class AgronomyRAGEngine:
-    def __init__(self, db_path: str = "./vector_db", model: str = "gpt-4o-mini"):
-        self.client = OpenAI()
-        self.model = model
-        self.chroma_client = chromadb.PersistentClient(path=db_path)
-        self.embedding_fn = embedding_functions.DefaultEmbeddingFunction()
-        self.collection = self.chroma_client.get_collection(
-            name="agronomy_handbooks",
-            embedding_function=self.embedding_fn
+    def __init__(self, db_path: str = "./vector_db", model: str = "gemini-3.8-flash"):
+        gemini_key = os.getenv("GEMINI_API_KEY")
+        
+        self.client = OpenAI(
+            api_key=gemini_key,
+            base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
         )
+        self.model = model
+        self.retriever = AgronomyRetriever(db_path=db_path)
 
     def query(self, user_question: str, top_k: int = 4) -> AgronomicAnswer:
-        # 1. Retrieve relevant chunks
-        results = self.collection.query(
-            query_texts=[user_question],
-            n_results=top_k
-        )
-
-        documents = results['documents'][0]
-        metadatas = results['metadatas'][0]
+        # 1. Retrieve chunks via AgronomyRetriever
+        chunks = self.retriever.retrieve(user_question, top_k=top_k)
 
         # 2. Format Context for Prompting
         formatted_context = ""
-        for i, (doc, meta) in enumerate(zip(documents, metadatas)):
+        for i, chunk in enumerate(chunks):
             formatted_context += f"\n--- CHUNK {i+1} ---\n"
-            formatted_context += f"Source: {meta['source_doc']} (Page {meta['page_number']})\n"
-            formatted_context += f"Content: {doc}\n"
+            formatted_context += f"Source: {chunk['source_doc']} (Page {chunk['page_number']})\n"
+            formatted_context += f"Content: {chunk['content']}\n"
 
         system_prompt = """
 You are an expert Agronomy and Crop Protection Assistant. 
@@ -72,4 +69,9 @@ Question: {user_question}
             temperature=0.0
         )
 
-        return response.choices[0].message.parsed
+        # 4. Extract and type-guard parsed result for Pylance
+        parsed_result = response.choices[0].message.parsed
+        if parsed_result is None:
+            raise ValueError("Failed to parse structured LLM response into AgronomicAnswer.")
+
+        return parsed_result
