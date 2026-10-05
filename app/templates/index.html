@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agronomy RAG Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Agronomy RAG Assistant</h1>
+    </header>
+
+    <main class="container">
+        <!-- Left Panel: Chat Interface -->
+        <section class="chat-section">
+            <div id="chat-box" class="chat-box">
+                <div class="message system-message">
+                    Ask a question about agronomy or crop protection literature.
+                </div>
+            </div>
+
+            <form id="rag-form" class="input-form">
+                <input type="text" id="query-input" placeholder="Type your agronomy question..." required autocomplete="off">
+                <button type="submit" id="submit-btn">Send</button>
+            </form>
+        </section>
+
+        <!-- Right Panel: Retrieved Source Inspector -->
+        <aside class="sources-section">
+            <h2>Retrieved Context</h2>
+            <div id="sources-list" class="sources-list">
+                <p class="placeholder-text">Retrieved document chunks will appear here after asking a question.</p>
+            </div>
+        </aside>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

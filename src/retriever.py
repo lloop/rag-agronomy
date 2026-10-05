@@ -3,7 +3,7 @@ import chromadb
 from chromadb.utils import embedding_functions
 
 
-class AgronomyRetriever:
+class DocumentRetriever:
     def __init__(self, db_path: str = "./vector_db"):
         self.chroma_client = chromadb.PersistentClient(path=db_path)
 

@@ -1,14 +1,16 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-from src.rag_engine import AgronomyRAGEngine
+from pipeline.rag_engine import RAGEngine
 
 if __name__ == "__main__":
     # Chroma automatically loads the existing vector_db off disk!
-    engine = AgronomyRAGEngine(db_path="./vector_db")
+    engine = RAGEngine(db_path="./vector_db")
     
-    # query = "What are the rules for organic crop rotation?"    
-    query = "what are the regulations around the use of glyphosate in agriculture?"    
+       
+    query = "Tell me about charcoal?"    
+
+
     result = engine.query(query)
 
     print("=== QUERY ===")
