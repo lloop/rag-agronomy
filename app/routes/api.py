@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from pipeline.rag_engine import RAGEngine
+from src.pipeline.rag_engine import RAGEngine
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 

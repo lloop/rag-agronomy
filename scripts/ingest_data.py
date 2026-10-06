@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
-from ingestion.ingester import DocumentIngester
+# Add the project root directory to Python's import search path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from src.ingestion.ingester import DocumentIngester
 
 if __name__ == "__main__":
     target_folder_name = sys.argv[1] if len(sys.argv) > 1 else "data_agronomy"
@@ -11,10 +13,15 @@ if __name__ == "__main__":
         print(f"Error: Directory '{base_dir.resolve()}' does not exist.")
         sys.exit(1)
 
+    # Clean collection name (e.g., "data_agronomy" -> "agronomy")
+    collection_name = target_folder_name.replace("data_", "")
+
     print(f"Targeting Dataset: {base_dir.resolve()}")
+    print(f"Collection Name: {collection_name}")
     print(f"Vector Database Location: {db_path.resolve()}\n")
 
-    ingester = DocumentIngester(db_path=str(db_path))
+    # Pass collection_name to ingester
+    ingester = DocumentIngester(db_path=str(db_path), collection_name=collection_name)
     
     pdf_count = 0
     for pdf_file in base_dir.rglob("*.pdf"):

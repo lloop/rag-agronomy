@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agronomy RAG Assistant</title>
+    <title>RAG Library Assistant</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header>
-        <h1>Agronomy RAG Assistant</h1>
+        <h1>RAG Library Assistant</h1>
     </header>
 
     <main class="container">
@@ -16,12 +16,12 @@
         <section class="chat-section">
             <div id="chat-box" class="chat-box">
                 <div class="message system-message">
-                    Ask a question about agronomy or crop protection literature.
+                    Ask a question.
                 </div>
             </div>
 
             <form id="rag-form" class="input-form">
-                <input type="text" id="query-input" placeholder="Type your agronomy question..." required autocomplete="off">
+                <input type="text" id="query-input" placeholder="Type your question..." required autocomplete="off">
                 <button type="submit" id="submit-btn">Send</button>
             </form>
         </section>

@@ -30,7 +30,7 @@ def query_vector_db(target_folder_name: str, query_text: str, n_results: int = 3
 
 if __name__ == "__main__":
     target_dataset = sys.argv[1] if len(sys.argv) > 1 else "data_agronomy"
-    search_query = sys.argv[2] if len(sys.argv) > 2 else "soil nitrogen management"
+    search_query = sys.argv[2] if len(sys.argv) > 2 else "charcoals role in soil health"
 
     print(f"Searching in '{target_dataset}' for: \"{search_query}\"\n")
     

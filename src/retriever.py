@@ -4,14 +4,14 @@ from chromadb.utils import embedding_functions
 
 
 class DocumentRetriever:
-    def __init__(self, db_path: str = "./vector_db"):
+    def __init__(self, db_path: str = "./vector_db", collection_name: str = "agronomy"):
         self.chroma_client = chromadb.PersistentClient(path=db_path)
 
         # Cast to Any to prevent Pyright DefaultEmbeddingFunction type errors
         self.embedding_fn = cast(Any, embedding_functions.DefaultEmbeddingFunction())
 
         self.collection = self.chroma_client.get_or_create_collection(
-            name="agronomy_handbooks",
+            name=collection_name,
             embedding_function=self.embedding_fn
         )
 
@@ -33,7 +33,8 @@ class DocumentRetriever:
                 retrieved_chunks.append({
                     "content": doc,
                     "source_doc": meta.get("source_doc", "Unknown"),
-                    "page_number": meta.get("page_number", 0)
+                    "page_number": meta.get("page_number", 0),
+                    "enclosing_folder": meta.get("enclosing_folder", "Unknown")
                 })
 
-        return retrieved_chunks
+        return retrieved_chunks 

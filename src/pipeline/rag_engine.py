@@ -24,7 +24,7 @@ class Answer(BaseModel):
 # --- RAG Engine ---
 
 class RAGEngine:
-    def __init__(self, db_path: str = "../data_agronomy/vector_db", model: str = "gemini-2.5-flash"):
+    def __init__(self, db_path: str = "../data_agronomy/vector_db", model: str = "gemini-3.8-flash"):
         gemini_key = os.getenv("GEMINI_API_KEY")
         
         self.client = OpenAI(
