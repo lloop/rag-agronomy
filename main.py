@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-from pipeline.rag_engine import RAGEngine
+from src.pipeline.rag_engine import RAGEngine
 
 if __name__ == "__main__":
     # Chroma automatically loads the existing vector_db off disk!

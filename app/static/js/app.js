@@ -66,28 +66,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderCitations(citations) {
-        sourcesList.innerHTML = "";
+            sourcesList.innerHTML = "";
 
-        if (!citations || citations.length === 0) {
-            sourcesList.innerHTML = '<p class="placeholder-text">No citations provided for this answer.</p>';
-            return;
+            if (!citations || citations.length === 0) {
+                sourcesList.innerHTML = '<p class="placeholder-text">No citations provided for this answer.</p>';
+                return;
+            }
+
+            citations.forEach((cite, idx) => {
+                const card = document.createElement("div");
+                card.className = "source-card";
+
+                const sourceDoc = cite.source_doc || "Unknown Document";
+                const pageNum = cite.page_number !== undefined && cite.page_number !== null ? cite.page_number : "N/A";
+                const folder = cite.enclosing_folder || "Unknown Folder";
+                const snippetText = cite.snippet ? `<div class="source-text">"${escapeHtml(cite.snippet)}"</div>` : "";
+
+                card.innerHTML = `
+                    <div class="source-header">
+                        <strong>[${idx + 1}] ${escapeHtml(sourceDoc)}</strong>
+                        <span>Page ${pageNum}</span>
+                    </div>
+                    <div class="source-folder">Folder: ${escapeHtml(folder)}</div>
+                    ${snippetText}
+                `;
+                sourcesList.appendChild(card);
+            });
         }
-
-        citations.forEach((cite, idx) => {
-            const card = document.createElement("div");
-            card.className = "source-card";
-
-            card.innerHTML = `
-                <div class="source-header">
-                    <strong>[${idx + 1}] ${escapeHtml(cite.source_doc)}</strong>
-                    <span>Page ${cite.page_number}</span>
-                </div>
-                <div class="source-folder">Folder: ${escapeHtml(cite.enclosing_folder)}</div>
-                <div class="source-text">"${escapeHtml(cite.snippet)}"</div>
-            `;
-            sourcesList.appendChild(card);
-        });
-    }
 
     function escapeHtml(str) {
         if (!str) return "";

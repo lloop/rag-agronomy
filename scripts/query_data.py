@@ -1,6 +1,7 @@
 from typing import Any, cast
 import sys
 from pathlib import Path
+from unittest import result
 import chromadb
 from chromadb.utils import embedding_functions
 
@@ -17,7 +18,7 @@ def query_vector_db(target_folder_name: str, query_text: str, n_results: int = 3
     embedding_fn = cast(Any, embedding_functions.DefaultEmbeddingFunction())
 
     collection = chroma_client.get_or_create_collection(
-        name="agronomy_handbooks",
+        name="agronomy",
         embedding_function=embedding_fn
     )
 
@@ -25,6 +26,12 @@ def query_vector_db(target_folder_name: str, query_text: str, n_results: int = 3
         query_texts=[query_text],
         n_results=n_results
     )
+    
+    # Check attributes of QueryResult
+    # if hasattr(result, "__dict__"):
+    #     print("QueryResult contents:", vars(result))
+    # else:
+    #     print("QueryResult contents:", result)
 
     return results
 
@@ -36,8 +43,8 @@ if __name__ == "__main__":
     
     query_results = query_vector_db(target_dataset, search_query)
 
-    documents = query_results.get("documents") or [[]]
-    metadatas = query_results.get("metadatas") or [[]]
+    documents = (query_results.get("documents") or [[]])[0]
+    metadatas = (query_results.get("metadatas") or [[]])[0]
 
     for idx, (doc, meta) in enumerate(zip(documents, metadatas), 1):
         if isinstance(meta, dict):

@@ -3,7 +3,6 @@ from src.pipeline.rag_engine import RAGEngine
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
-# Initialize engine instance
 rag = RAGEngine()
 
 @api_bp.route("/query", methods=["POST"])
@@ -16,10 +15,9 @@ def query_endpoint():
         return jsonify({"error": "Field 'query' is required."}), 400
 
     try:
-        # Returns Answer Pydantic model
         result_model = rag.query(user_question, top_k=top_k)
-        
-        # Serialize Pydantic object to JSON-compatible dict
         return jsonify(result_model.model_dump()), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        # Return exact error string to frontend
+        status_code = 429 if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) else 500
+        return jsonify({"error": str(e)}), status_code
